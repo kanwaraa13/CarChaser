@@ -1,28 +1,62 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import api from '../api';
 
 export const SellerVerification = () => {
     const navigate = useNavigate();
-    const [verificationCode, setVerificationCode] = useState(['', '', '', '']);
+    const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
+    const [errors, setErrors] = useState('');
     const inputRefs = useRef([]);
+
+    useEffect(() => {
+        const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
+        if (storedPhoneNumber) {
+            console.log('Phone number from sessionStorage:', storedPhoneNumber);
+        }
+    }, []);
 
     const handleChange = (index, event) => {
         const { value } = event.target;
+        const newValue = value.length > 0 ? value.charAt(value.length - 1) : '';
+
         const newVerificationCode = [...verificationCode];
-        newVerificationCode[index] = value;
+        newVerificationCode[index] = newValue;
         setVerificationCode(newVerificationCode);
 
-        // Move to the next input field if a number is entered
-        if (value !== '' && index < inputRefs.current.length - 1) {
+        if (newValue !== '' && index < inputRefs.current.length - 1) {
             inputRefs.current[index + 1].focus();
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        // Here you can handle form submission or validation
-        // For now, just navigate to the next page
-        navigate('/uploadvehicledetails');
+
+        const fullVerificationCode = verificationCode.join('');
+
+        if (fullVerificationCode.trim()) {
+            try {
+                const response = await api.post('/auth/seller/verifylogin', {
+                    phone: sessionStorage.getItem('phoneNumber'),
+                    otp: fullVerificationCode,
+                });
+
+                console.log('Verification successful:', response.data);
+                const UserID = response.data.UserID; // Assuming UserID is directly available in response.data
+                sessionStorage.setItem('user_id', UserID);
+                console.log('User ID stored in sessionStorage:', UserID);
+                    const isNewUser = sessionStorage.getItem('isNewUser');
+                    console.log(isNewUser);
+                    navigate('/uploadvehicledetails');
+
+            } catch (error) {
+                console.error('Error occurred during verification:', error);
+                console.error('Response from server:', error.response);
+                setErrors(error.response?.data?.errors || 'Wrong verification Code');
+            }
+        } else {
+            console.error('Verification code is empty');
+            setErrors('Verification code is empty');
+        }
     };
 
     return (
@@ -39,29 +73,27 @@ export const SellerVerification = () => {
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="Verification-input">
-                        {verificationCode.map((digit, index) => (
+                        {[...Array(6)].map((_, index) => (
                             <div className="form-group" key={index}>
                                 <input
                                     type="number"
-                                    className="form-control py-3"
+                                    className="form-control py-3 mr-4"
                                     placeholder=""
-                                    value={digit}
-                                    onChange={(e) => handleChange(index, e)}
-                                    ref={(ref) => (inputRefs.current[index] = ref)}
-                                    maxLength={1}
-                                    min="0"
-                                    max="9"
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
+                                    value={verificationCode[index]}
+                                    onChange={(event) => handleChange(index, event)}
+                                    ref={(input) => (inputRefs.current[index] = input)}
                                 />
                             </div>
                         ))}
                     </div>
-                    <button type="submit" className="btn btn-primary w-100 py-3">
+                    <button type="submit" className="btn btn-primary w-100 py-3 ml-5 text-center">
                         <img src="../images/Arrow 1.png" alt="arrow-img" />
                     </button>
+                    <p className="text-danger">{errors}</p>
                     <div className="bottom-link pt-4 text-center">
-                        <p>Didn't Receive an OTP? <a href="#" className="w-100 py-3">Resend OTP</a></p>
+                        <p>
+                            Didn't Receive a OTP? <a href="#" className="w-100 py-3">Resend OTP</a>
+                        </p>
                     </div>
                 </form>
             </div>

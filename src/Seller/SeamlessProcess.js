@@ -15,11 +15,8 @@ export const  SeamlessProcess = () => {
              <div class="col-lg-3 col-md-6 mt-sm-3 mt-3">
                 <a href="/view-posts" class="btn btn-primary px-5 py-3">View Post</a>
              </div>
-             <div class="col-lg-3 col-md-6 mt-sm-3 mt-3">
-                <a href="/uploadvehicledetails" class="btn btn-primary px-5 py-3 mx-3">Edit Post</a>
-             </div>
              <div class="col-lg-6 col-md-12 text-center mt-sm-3 mt-3">
-                <a href="https://yaktechnology.ca/clients/carchaser/" class="btn btn-primary px-5 py-3 mx-3">Add another vehicle to sell</a>
+                <a href="https://carchaser.ca/" class="btn btn-primary px-5 py-3 mx-3">Add another vehicle to sell</a>
              </div>
           </div>
        </div>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react';
 import { SellerNav } from './SellerNav';
 export const CarEstimated = () => {
   return (
@@ -33,7 +33,7 @@ export const CarEstimated = () => {
        </div>
     </div>
     <div class="estimate-button pb-5">
-       <a href="/book-appointment" class="btn btn-primary">Sound good, Lets go</a> 
+       <a href="/book-appointment" type="submit" class="btn btn-primary">Sound good, Lets go</a> 
     </div>
  </div>
 </section>

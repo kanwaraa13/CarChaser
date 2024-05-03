@@ -394,7 +394,7 @@ Dealer screens css
 
 /*signin page css*/
 .dealer-signin form{width: 60%;margin: auto;}
-.sub-heading{color: #6DC1FF;font-size;16px;font-weight: 500; text-align: center;}
+.sub-heading{color: #6DC1FF;font-size:16px;font-weight: 500; text-align: center;}
 .update-btn-td {background:white!important;outline: 1px solid var(--color-primary)!important;}
 
 
@@ -580,7 +580,26 @@ header .calendar-current-date {
 
 
 
+.flex-control-thumbs{display: flex;}
+.flex-control-thumbs li {position: relative;}
+.flex-control-thumbs li img{height: 100%; object-fit: cover;}
 
+
+.carbid-image-panel{padding-top: 56%;}
+.carbid-image-panel img{position: absolute; left:-100%; right:-100%; margin: auto; top: -100%; bottom: -100%; 
+max-width: none; width: 100%;}
+.book-appointment-panel form select.form-control:not([size]):not([multiple]) {height: calc(2.25rem + 23px);}
+
+.form-add-image .form-group{width: 100%; position: relative; height: 100%;}
+.form-add-image .form-group input{position: absolute; left: 0; top: 0; width:100%;
+height: 100%;}
+.form-add-image .form-group label{top: 1rem;}
+.form-add-image .image-preview button{ position: absolute; right: 0; top: 0; z-index: 9; background: red;  border: 0 none;
+  border-radius: 50px;  color: #fff;  width: 30px;  height: 31px;}
+
+  input{text-transform: none !important;}
+
+  .form-add-image button{position: absolute; right: 0; cursor: pointer; z-index: 9999;}
 
 
 
@@ -651,4 +670,7 @@ header .calendar-current-date {
  	.bookappointment-btn a{white-space: normal;}
  	.experience-seamless-panel { margin: 1rem!important;padding: 1rem!important;}
  	.bookappointment-btn {text-align: center;}
+   .form-price-bid {flex-wrap: wrap;}
+   .form-bid-price textarea.form-control {    width: 169px;}
+   .flexslider .slides img {  height: 100%;   object-fit:cover;}
 }
