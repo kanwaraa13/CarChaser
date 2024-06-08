@@ -84,9 +84,13 @@ export const UploadVehicleDetails = () => {
       const [financednote, setFinancedNote] = useState('');
       const [notedrivable, setNoteDrivable] = useState('');
       const [isNewUser, setIsNewUser] = useState(false);
+      const [isPopupVisible, setIsPopupVisible] = useState(false);
       const [successMessage, setSuccessMessage] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
       const [interioimage, setInterioimage] = useState('');
-	  
+      const [vehiclevideo, setVehicleVideo] = useState('');
+      
+   
 	// Modify handleImageChange to update the imageChanged state
 const handleImageChange = (event, index) => {
     const file = event.target.files[0];
@@ -372,30 +376,55 @@ const handleAftermarketSpoilerChange = (event) => {
 };
 const handleMinorDamageChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked && mintCondition) {
+      setMintCondition(false); // Uncheck "mint condition" if it's checked
+    }
    setMinorDamage(isChecked); // Update state based on checkbox checked status
 };
 const handleFadingPaintsChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked && mintCondition) {
+      setMintCondition(false); // Uncheck "mint condition" if it's checked
+    }
    setFadingPaints(isChecked); // Update state based on checkbox checked status
 
 };
 const handleRustChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked && mintCondition) {
+      setMintCondition(false); // Uncheck "mint condition" if it's checked
+    }
    setRust(isChecked); // Update state based on checkbox checked status
 
 };
 const handleHailDamageChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked && mintCondition) {
+      setMintCondition(false); // Uncheck "mint condition" if it's checked
+    }
    setHailDamage(isChecked); // Update state based on checkbox checked status
 
 };
 
 const handleMintConditionChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked) {
+      setMinorDamage(false);
+      setFadingPaints(false);
+      setRust(false);
+      setDents(false);
+      setHailDamage(false);
+    }
    setMintCondition(isChecked); // Update state based on checkbox checked status
 
 };
-
+const handleDentsChange = (event) => {
+   const isChecked = event.target.checked; // Check if the checkbox is checked
+   if (isChecked && mintCondition) {
+      setMintCondition(false); // Uncheck "mint condition" if it's checked
+    }
+   setDents(isChecked); // Update state based on checkbox checked status
+ };
 const handleRipsOrTearsChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
    if (isChecked && IntmintCondition) {
@@ -404,13 +433,7 @@ const handleRipsOrTearsChange = (event) => {
    setRipsOrTears(isChecked); // Update state based on checkbox checked status
  };
  
- const handleDentsChange = (event) => {
-   const isChecked = event.target.checked; // Check if the checkbox is checked
-   if (isChecked && IntmintCondition) {
-     setIntMintCondition(false); // Uncheck "mint condition" if it's checked
-   }
-   setDents(isChecked); // Update state based on checkbox checked status
- };
+
  
  const handleVisibleStainChange = (event) => {
    const isChecked = event.target.checked; // Check if the checkbox is checked
@@ -441,7 +464,6 @@ const handleRipsOrTearsChange = (event) => {
    // Uncheck all other checkboxes if "mint condition" is checked
    if (isChecked) {
      setRipsOrTears(false);
-     setDents(false);
      setVisibleStain(false);
      setStrongSmell(false);
      setDamagedSystems(false);
@@ -556,14 +578,19 @@ const handlemodificationsnote = (event) => {
 const handlefinancednote = (event) => {
    const value = event.target.value; // Get the value from the textarea
    setFinancedNote(value); // Update state with the value from the textarea
-console.log(event.target.value)
-};
 
+};
 
 const handledrivablenote = (event) => {
    const value = event.target.value; // Get the value from the textarea
    setNoteDrivable(value); // Update state with the value from the textarea
-console.log(event.target.value)
+
+};
+const handlevehiclevideo = (event) => {
+   const value = event.target.value; // Get the value from the textarea
+   console.log(event.target.value)
+   setVehicleVideo(value); // Update state with the value from the textarea
+
 };
 
 
@@ -635,7 +662,9 @@ const fetchData = async () => {
        setIsAfterMarketSelected(vehicleData.vehicle.Car_Rims || '');
        setRimsChange(vehicleData.vehicle.Stock_Rims || '');
        setInterioimage(vehicleData.vehicle.Interior_Image || '');
-       console.log(vehicleData.vehicle.Interior_Image);
+       setVehicleVideo(vehicleData.vehicle.Vehicle_video || '');
+       
+
        
        
    } catch (error) {
@@ -643,9 +672,36 @@ const fetchData = async () => {
    }
 };
 const handleRemoveImage = (indexToRemove) => {
-   setInteriorImageUrls(prevUrls => prevUrls.filter((_, index) => index !== indexToRemove));
+   setInteriorImageUrls(prevUrls => {
+       const newUrls = [...prevUrls];
+       newUrls[indexToRemove] = null; // Set the image URL at the specified index to null
+       return newUrls;
+   });
 };
 
+const handleRemoveExteriorImage = (indexToRemove) => {
+   setExteriorImageUrls(prevUrls => {
+       const newUrls = [...prevUrls];
+       newUrls[indexToRemove] = null; // Set the image URL at the specified index to null
+       return newUrls;
+   });
+};
+
+const handleRemoveDashboardImage = (indexToRemove) => {
+   setDashboardImageUrls(prevUrls => {
+       const newUrls = [...prevUrls];
+       newUrls[indexToRemove] = null; // Set the image URL at the specified index to null
+       return newUrls;
+   });
+};
+
+const handleRemoveRimsImage = (indexToRemove) => {
+   setRimsImageUrls(prevUrls => {
+       const newUrls = [...prevUrls];
+       newUrls[indexToRemove] = null; // Set the image URL at the specified index to null
+       return newUrls;
+   });
+};
 useEffect(() => {
    const storedUserId = sessionStorage.getItem('user_id');
    if (!storedUserId) {
@@ -736,7 +792,7 @@ const handleSubmit = async (event) => {
          formData.append('Leased_Financed', isfinancedSelected  ? '1' : '0');
          formData.append('Financed_By', financednote);
          formData.append('vehicle_drivable_not_explanation', notedrivable);
-        
+         formData.append('Vehicle_video', vehiclevideo);
 		interiorImageUrls.forEach((imageUrl, index) => {
 		const fileInput = document.getElementById(`imageInput-${index}`);
 		const file = fileInput.files[0];
@@ -797,86 +853,49 @@ const handleSubmit = async (event) => {
 		  formData.append(`Rims_Image${index + 1}`, file);
 		}
 	  });
-		// Append interior image files
-
-       // Log selected image files to the console
-       /* imagePreviews.forEach((preview, index) => {
-         if (preview) {
-             // Get the file from the inputRefs
-             const file = inputRefs.current[index].files[0];
-             console.log(`Image ${index + 1}:`, file);
-             if (!file) {
-                 console.error(`No file selected for image ${index + 1}`);
-                 return;
-             }
-             // Append the file to formData with the appropriate variable name
-             if (index === 0) {
-                 
-             } else if (index === 1) {
-                 formData.append('Interior_Image2', interiorImageNames[1]);
-             } else if (index === 2) {
-                 formData.append('Interior_Image3', interiorImageNames[2]);
-             } else if (index === 3) {
-                 formData.append('Interior_Image4', interiorImageNames[3]);
-             } else if (index === 4) {
-               formData.append('Exterior_Image', file);
-             }else if (index === 5) {
-               formData.append('Exterior_Image2', file);
-             } else if (index === 6) {
-               formData.append('Exterior_Image3', file);
-             } else if (index === 7) {
-               formData.append('Exterior_Image4', file);
-            }  else if (index === 8) {
-               formData.append('Dashboard_Image', file);
-            } else if (index === 9) {
-               formData.append('Dashboard_Image2', file);
-            } else if (index === 10) {
-               formData.append('Dashboard_Image3', file);
-            } else if (index === 11) {
-               formData.append('Dashboard_Image4', file);
-            } else if (index === 12) {
-               formData.append('Rims_Image', file);
-            } else if (index === 13) {
-               formData.append('Rims_Image2', file);
-            } else if (index === 14) {
-               formData.append('Rims_Image3', file);
-            } else if (index === 15) {
-               formData.append('Rims_Image4', file);
-            }
-         }
-     }); */
+       
        // Log formData to console
        console.log('FormData:', formData);
        // Make the API request with formData
-       const response = await api.post(`/seller/updatevehicle/${storedVehicleId}`, formData, {
-           headers: {
-               'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
-           },
-       });
+       setIsLoading(true); // Show loader
+       setIsPopupVisible(false);  // Hide Popup
+        try {
+            const response = await api.post(`/seller/updatevehicle/${storedVehicleId}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
+                },
+            });
+            console.log('Vehicle details uploaded successfully:', response.data);
+            setSuccessMessage('Vehicle Edit Successfuly');
+        } catch (error) {
+            console.error('Error uploading vehicle details:', error);
+            // Handle error
+        } finally {
+       
+            if (!sessionStorage.getItem('isNewUser')) {
+                // Set a timeout to navigate to '/view-posts' after 5 seconds
+                setTimeout(() => {
+                    // Navigate to '/view-posts' page
+                    navigate('/view-posts');
+                }, 5000);
+            } else { 
+                
+                // If 'isNewUser' key exists, remove it from session storage
+                sessionStorage.removeItem('isNewUser');
+                // Update state to reflect the change
+                setIsNewUser(false);
 
+                setIsLoading(false); // Hide loader
+                setIsPopupVisible(true); 
+            }
 
-       console.log('Vehicle details uploaded successfully:', response.data);
-       setSuccessMessage('Vehicle Edit Successfuly');
-       if (!sessionStorage.getItem('isNewUser')) {
-         // Set a timeout to navigate to '/view-posts' after 5 seconds
-         setTimeout(() => {
-             // Navigate to '/view-posts' page
-             navigate('/view-posts');
-         }, 5000);
-     } else {
-         // If 'isNewUser' key exists, remove it from session storage
-         sessionStorage.removeItem('isNewUser');
-         // Update state to reflect the change
-         navigate('/carvalue');
-         setIsNewUser(false);
+        }
+      } catch (error) {
+         console.error('Error uploading vehicle details:', error);
+         // Handle error
      }
+    };
 
-   
-   } catch (error) {
-       console.error('Error uploading vehicle details:', error);
-       // Handle error
-   }
-};
 const nextStep = () => {
    setCurrentStep(prevStep => {
      const nextStep = prevStep + 1;
@@ -1597,7 +1616,7 @@ const handleIssuesChange = (event) => {
                            
                            </div>
                         </div>
-                        <button class="btn btn-primary form-button py-3 px-5" type="button"onClick={nextStep}>Continue</button>
+                        <button class="btn btn-primary form-button py-3 px-5 my-3" type="button"onClick={nextStep}>Continue</button>
                      </div>
                      <div className={`form-step ${currentStep === 2 ? 'active' : ''}`} id="step-2" ref={el => stepRefs.current[1] = el}>
                         <div class="vehicle-detaile-one">
@@ -1952,158 +1971,244 @@ const handleIssuesChange = (event) => {
                        </div>
                          )}
                     </div>
+                    <div class="form-group pb-3 px-2" id="inputField4">    
+      <p class="pb-0 font-weight-bold">Vehicle Upload Video Link</p> 
+      <textarea
+        class="form-control"
+        id="exampleFormControlTextarea1"
+        rows="1"
+        onChange={handlevehiclevideo}
+        value={vehiclevideo}
+        
+      ></textarea>
+    </div>
                     <h3 className="vehicle-info-heading pt-3">Interior of the car</h3>
                     <div className="row">
 					 {/* Render input fields for each type of car part */}
 						{/* Display existing images */}
-            {interiorImageUrls.map((imageUrl, index) => (
-                <label key={index} htmlFor={`imageInput-${index}`}>
-                    {imageUrl ? (
-                          <img
-                              src={imageUrl}
-                              alt={`Interior Image ${index}`}
-                              style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
-                          />
-                        
-                    ) : (
-                        <div
-                            style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
-                        >
-                            Add Image
-                        </div>
-                    )}
-                    <input
-                        id={`imageInput-${index}`}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(event) => handleImageChange(event, index)}
+
+                  {interiorImageUrls.map((imageUrl, index) => (
+    <div key={index}>
+        {imageUrl ? (
+            <div style={{ position: 'relative' }}>
+                <img
+                    src={imageUrl}
+                    alt={`Interior Image ${index}`}
+                    style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
+                />
+                <button
+                    onClick={() => handleRemoveImage(index)}
+                    style={{
+                        position: 'absolute',
+                        top: '5px',
+                        right: '5px',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: 'red',
+                        fontSize: '16px',
+                    }}
+                >
+                    &#10006;
+                </button>
+            </div>
+        ) : (
+            <div
+                onClick={() => document.getElementById(`imageInput-${index}`).click()}
+                style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
+            >
+                Add Image
+            </div>
+        )}
+        <input
+            id={`imageInput-${index}`}
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            onChange={(event) => handleImageChange(event, index)}
+        />
+    </div>
+))}        
+        	    </div>
+               <h3 className="vehicle-info-heading pt-3">Exterior of the car</h3>
+<div className="row">
+    {/* Display existing images */}
+    {exteriorImageUrls.map((imageUrl, index) => (
+        <div key={index}>
+            {imageUrl ? (
+                <div style={{ position: 'relative' }}>
+                    <img
+                        src={imageUrl}
+                        alt={`Exterior Image ${index}`}
+                        style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
                     />
-                </label>
-                   
-            ))}  
-				    </div>
-       <h3 className="vehicle-info-heading pt-3">Exterior of the car</h3>
-		<div className="row">
-		  {/* Display existing images */}
-				   {exteriorImageUrls.map((imageUrl, index) => (
-                <label key={index} htmlFor={`imageInpute-${index}`}>
-                    {imageUrl ? (
-                        <img
-                            src={imageUrl}
-                            alt={`Exterior Image ${index}`}
-                            style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
-                        />
-                        
-                    ) : (
-                        <div
-                            style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
-                        >
-                            Add Image
-                        </div>
-                    )}
-                    <input
-                        id={`imageInpute-${index}`}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(event) => handleImageChangeexterior(event, index)}
+                    <button
+                        onClick={() => handleRemoveExteriorImage(index)}
+                        style={{
+                            position: 'absolute',
+                            top: '5px',
+                            right: '5px',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: 'red',
+                            fontSize: '16px',
+                        }}
+                    >
+                        &#10006;
+                    </button>
+                </div>
+            ) : (
+                <div
+                    onClick={() => document.getElementById(`imageInpute-${index}`).click()}
+                    style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
+                >
+                    Add Image
+                </div>
+            )}
+            <input
+                id={`imageInpute-${index}`}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(event) => handleImageChangeexterior(event, index)}
+            />
+        </div>
+    ))}
+</div>
+<h3 className="vehicle-info-heading pt-3">Dashboard of the car</h3>
+<div className="row">
+    {/* Display existing images */}
+    {dashboardImageUrls.map((imageUrl, index) => (
+        <div key={index}>
+            {imageUrl ? (
+                <div style={{ position: 'relative' }}>
+                    <img
+                        src={imageUrl}
+                        alt={`Dashboard Image ${index}`}
+                        style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
                     />
-                </label>
-            ))} 
-		</div>
-        <h3 className="vehicle-info-heading pt-3">Dashboard of the car</h3>
-			  <div className="row">
-			   {/* Display existing images */}
-				   {dashboardImageUrls.map((imageUrl, index) => (
-                <label key={index} htmlFor={`imageInputd-${index}`}>
-                    {imageUrl ? (
-                        <img
-                            src={imageUrl}
-                            alt={`Dashboard Image ${index}`}
-                            style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
-                        />
-                    ) : (
-                        <div
-                            style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
-                        >
-                            Add Image
-                        </div>
-                    )}
-                    <input
-                        id={`imageInputd-${index}`}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(event) => handleImageChangedashboard(event, index)}
-                    />
-                </label>
-            ))} 
-			  </div>
-            <h3 className="vehicle-info-heading pt-3">Rims of the car</h3>
-            <div className="row">
-              {/* Display existing images */}
-				   {rimsImageUrls.map((imageUrl, index) => (
-                <label key={index} htmlFor={`imageInputr-${index}`}>
-                    {imageUrl ? (
+                    <button
+                        onClick={() => handleRemoveDashboardImage(index)}
+                        style={{
+                            position: 'absolute',
+                            top: '5px',
+                            right: '5px',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            color: 'red',
+                            fontSize: '16px',
+                        }}
+                    >
+                        &#10006;
+                    </button>
+                </div>
+            ) : (
+                <div
+                    onClick={() => document.getElementById(`imageInputd-${index}`).click()}
+                    style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
+                >
+                    Add Image
+                </div>
+            )}
+            <input
+                id={`imageInputd-${index}`}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={(event) => handleImageChangedashboard(event, index)}
+            />
+        </div>
+    ))}
+</div>
+<h3 className="vehicle-info-heading pt-3">Rims of the car</h3>
+<div className="row">
+    {/* Display existing images */}
+    {rimsImageUrls.map((imageUrl, index) => (
+        <div key={index}>
+            <label htmlFor={`imageInputr-${index}`}>
+                {imageUrl ? (
+                    <div style={{ position: 'relative' }}>
                         <img
                             src={imageUrl}
                             alt={`Rims Image ${index}`}
                             style={{ width: '100px', height: '100px', margin: '5px', cursor: 'pointer' }}
                         />
-                    ) : (
-                        <div
-                            style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
+                        <button
+                            onClick={() => handleRemoveRimsImage(index)}
+                            style={{
+                                position: 'absolute',
+                                top: '5px',
+                                right: '5px',
+                                background: 'transparent',
+                                border: 'none',
+                                cursor: 'pointer',
+                                color: 'red',
+                                fontSize: '16px',
+                            }}
                         >
-                            Add Image
-                        </div>
-                    )}
-                    <input
-                        id={`imageInputr-${index}`}
-                        type="file"
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={(event) => handleImageChangerims(event, index)}
-                    />
-                </label>
-            ))}
-            </div>
+                            &#10006;
+                        </button>
+                    </div>
+                ) : (
+                    <div
+                        style={{ width: '100px', height: '100px', margin: '5px', border: '1px solid #ccc', textAlign: 'center', lineHeight: '100px', cursor: 'pointer' }}
+                    >
+                        Add Image
+                    </div>
+                )}
+                <input
+                    id={`imageInputr-${index}`}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={(event) => handleImageChangerims(event, index)}
+                />
+            </label>
+        </div>
+    ))}
+</div>
           
                  </div>
-                 {successMessage && <p class="text-success">{successMessage}</p>}
-                 {isNewUser ? (
-                <button className="btn btn-primary form-button py-3 px-5" data-toggle="modal" data-target="#exampleModal" type="submit">
-                    Submit
-                </button>
-            ) : (
-                <button className="btn btn-primary form-button py-3 px-5" type="submit">
-                    Update
-                </button>
-            )}
+            
+ {isNewUser ? (
+   <div>
+   {isLoading && (
+       <div className="loader">
+           <img src="../images/load.png"/>
+           <p>Your form is Uploading...</p>
+       </div>
+   )}
+   {!isLoading && (
+       <button className="btn btn-primary form-button py-3 px-5 my-3" onClick={handleSubmit} type="button">
+           Submit
+       </button>
+   )}
+</div>
+) : (
+     <div>{successMessage && <p class="text-success">{successMessage}</p>}
+    <button className="btn btn-primary form-button py-3 px-5 my-3" onClick={handleSubmit} type="button">
+        Update
+    </button>
+    </div>
+)}
                  </div>
            </form>
         </div>
-        <div>
-    </div>
-        <div className="modal fade multistep-popup" id="exampleModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Modal title</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <div className="form-step-img">
-                                <img src="../images/pngkey-1.png" alt="image" />
-                            </div>
-                                 <h3 className="main-heading py-3">Vehicle Added Successfully</h3>
-                                 <a href="/carvalue" className="btn btn-primary px-5 py-3">Let's Get Going</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+     
+            {isPopupVisible && (
+                   <div class="main-popout">
+               <div class="inner-popout">
+                  <div className="form-step-img">
+                    <img src="../images/pngkey-1.png" alt="image" />
+                 </div>
+               <h3 className="main-heading py-3">Vehicle Added Successfully</h3>
+               <a href="/carvalue" className="btn btn-primary px-5 py-3">Let's Get Going</a>
+               </div>
+               </div>
+           )}
+     
      </section>
 
     );

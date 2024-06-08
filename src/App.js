@@ -12,7 +12,7 @@ import { SeamlessProcess } from './Seller/SeamlessProcess';
 import { BookedInspection } from './Seller/BookedInspection';
 import { ViewPosts } from './Seller/ViewPosts';
 import { CarDetails } from './Seller/CarDetails';
-
+import { Pdf } from './Seller/Pdf';
 
 
 function App() {
@@ -32,7 +32,8 @@ function App() {
           <Route path="/view-posts" element={<ViewPosts />} />
           <Route path="/car-details/:Vehicle_Id" element={<CarDetails />} />
           <Route path="/booked-inspection-appointments" element={<BookedInspection />} />
-       
+          <Route path="/pdfgenrate" element={<Pdf />} />
+          
         </Routes>
       </div>
     </Router>
