@@ -2,40 +2,45 @@ import React, { useEffect, useState } from 'react';
 import { SellerNav } from './SellerNav';
 import api from '../api';
 export const BookedInspection = () => {
-const [bookinspection, setBookInspection] = useState([]);
-const [selectedAgent, setSelectedAgent] = useState(null);
-const [showModal, setShowModal] = useState(false);
-const [selectedInspectionReport, setSelectedInspectionReport] = useState('');
-useEffect(() => {
-const userId = sessionStorage.getItem('user_id');
-if (userId) {
-fetchData(userId);
-} else {
-fetchData();
-}
-}, []);
-const fetchData = async (userId) => {
-try {
-const response = await api.get(`/seller/bookedinspection/${userId}`);
-const bookedInspections = response.data.BookedInspection;
-if (bookedInspections && Array.isArray(bookedInspections)) {
-setBookInspection(bookedInspections);
-} else {
-console.error('Booked inspection data is not in the expected format:', bookedInspections);
-setBookInspection([]);
-}
-} catch (error) {
-console.error('Error fetching booked inspection details:', error);
-}
-};
-const handleModalToggle = (agent) => {
-setSelectedAgent(agent);
-setShowModal(!showModal);
-};
-const handleModalToggleReport = (inspectionReport) => {
-setSelectedInspectionReport(inspectionReport);
-setShowModal(true);
-};
+   const [bookinspection, setBookInspection] = useState([]);
+   const [selectedAgent, setSelectedAgent] = useState(null);
+   const [showModal, setShowModal] = useState(false);
+   const [selectedInspectionReport, setSelectedInspectionReport] = useState('');
+
+   useEffect(() => {
+      const userId = sessionStorage.getItem('user_id');
+      if (userId) {
+         fetchData(userId);
+      } else {
+         fetchData();
+      }
+   }, []);
+
+   const fetchData = async (userId) => {
+   try {
+         const response = await api.get(`/seller/bookedinspection/${userId}`);
+         const bookedInspections = response.data.BookedInspection;
+         if (bookedInspections && Array.isArray(bookedInspections)) {
+               setBookInspection(bookedInspections);
+         } else {
+            setBookInspection([]);
+         }
+      }
+      catch (error) {
+            console.error('Error fetching booked inspection details:', error);
+      }
+   };
+
+   const handleModalToggle = (agent) => {
+      setSelectedAgent(agent);
+      setShowModal(!showModal);
+   };
+
+   const handleModalToggleReport = (inspectionReport) => {
+      setSelectedInspectionReport(inspectionReport);
+      setShowModal(true);
+   };
+   
 return (
 <section className="bookedappointment-section">
    <SellerNav />
@@ -59,9 +64,14 @@ return (
                      </a>
                   </td>
                   <td>
-                     <a onClick={() => handleModalToggle(item.agent)} data-toggle="modal" data-target=".bd-example-modal-lg11">
-                     {item.agent.Agent_Fname}
-                     </a>
+                  {item.agent ? (
+                        <a onClick={() => handleModalToggle(item.agent)} data-toggle="modal" data-target=".bd-example-modal-lg11">
+                          {item.agent.Agent_Fname}
+                        </a>
+                      ) : (
+                        'No agent data'
+                      )}
+
                   </td>
                   <td>{item.Appt_DateTime}</td>
                   <td>

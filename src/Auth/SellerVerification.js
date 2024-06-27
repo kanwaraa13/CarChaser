@@ -3,64 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
 export const SellerVerification = () => {
-  const navigate = useNavigate();
-  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
-  const [errors, setErrors] = useState('');
-  const inputRefs = useRef([]);
+    const navigate = useNavigate();
+    const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
+    const [errors, setErrors] = useState('');
+    const inputRefs = useRef([]);
 
-  useEffect(() => {
-    const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
-    if (storedPhoneNumber) {
-      // Optionally, you can set the phone number to state here if needed
-    }
-  }, []);
-
-  const handleChange = (index, event) => {
-    const { value } = event.target;
-    const newValue = value.length > 0 ? value.charAt(value.length - 1) : '';
-    const newVerificationCode = [...verificationCode];
-    newVerificationCode[index] = newValue;
-    setVerificationCode(newVerificationCode);
-    if (newValue !== '' && index < inputRefs.current.length - 1) {
-      inputRefs.current[index + 1].focus();
-    }
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const fullVerificationCode = verificationCode.join('');
-
-    // Check if all fields are filled
-    if (verificationCode.some(code => code === '')) {
-      setErrors('All fields must be filled.');
-      return;
-    }
-
-    if (fullVerificationCode.trim()) {
-      try {
-        const response = await api.post('/auth/seller/verifylogin', {
-          phone: sessionStorage.getItem('phoneNumber'),
-          otp: fullVerificationCode,
-        });
-
-        if (response.data.status === true) {
-          const UserID = response.data.UserID; // Assuming UserID is directly available in response.data
-          sessionStorage.setItem('user_id', UserID);
-          const isNewUser = sessionStorage.getItem('isNewUser');
-          navigate('/uploadvehicledetails');
-        } else {
-          setErrors('Verification code does not match.');
-        }
-      } catch (error) {
-        console.error('Error occurred during verification:', error);
-        console.error('Response from server:', error.response);
-        setErrors(error.response?.data?.errors || 'Wrong verification code.');
+    useEffect(() => {
+      const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
+      if (storedPhoneNumber) {
+        // Optionally, you can set the phone number to state here if needed
       }
-    } else {
-      console.error('Verification code is empty');
-      setErrors('Verification code is empty.');
-    }
-  };
+    }, []);
+
+    const handleChange = (index, event) => {
+      const { value } = event.target;
+      const newValue = value.length > 0 ? value.charAt(value.length - 1) : '';
+      const newVerificationCode = [...verificationCode];
+      newVerificationCode[index] = newValue;
+      setVerificationCode(newVerificationCode);
+      if (newValue !== '' && index < inputRefs.current.length - 1) {
+        inputRefs.current[index + 1].focus();
+      }
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const fullVerificationCode = verificationCode.join('');
+        // Check if all fields are filled
+        if (verificationCode.some(code => code === '')) {
+          setErrors('All fields must be filled.');
+          return;
+        }
+        if (fullVerificationCode.trim()) {
+          try {
+            const response = await api.post('/auth/seller/verifylogin', {
+              phone: sessionStorage.getItem('phoneNumber'),
+              otp: fullVerificationCode,
+            });
+            if (response.data.status === true) {
+                const UserID = response.data.UserID; // Assuming UserID is directly available in response.data
+                sessionStorage.setItem('user_id', UserID);
+                const isNewUser = sessionStorage.getItem('isNewUser');
+                navigate('/uploadvehicledetails');
+            } else {
+              setErrors('Verification code does not match.');
+            }
+          } catch (error) {
+          
+            setErrors(error.response?.data?.errors || 'Wrong verification code.');
+          }
+        } else {
+          setErrors('Verification code is empty.');
+        }
+    };
 
   return (
     <section className="seller-section Verification">

@@ -3,156 +3,165 @@ import { SellerNav } from './SellerNav';
 import { useNavigate } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import api from '../api'; 
+import api from '../api';
 export const CarSellAppointment = () => {
-const navigate = useNavigate();
-const [date, setDate] = useState('');
-const [time, setTime] = useState('');
-const [address, setAddress] = useState('');
-const [agents, setAgents] = useState([]);
-const [transmissionType, setTransmissionType] = useState('');
-const [selectedAgentId, setSelectedAgentId] = useState('');
-const [availableDates, setAvailableDates] = useState([]);
-const [selectedTime, setSelectedTime] = useState('');
-const [slots, setSlots] = useState([]);
-const [successMessage, setSuccessMessage] = useState("");
-const [availableDatesFromApi, setAvailableDatesFromApi] = useState([]);
-const [selectedDate, setSelectedDate] = useState(new Date());
-const [selectableDays, setSelectableDays] = useState([]); // Define the selectable days array
-const [selectableDates, setSelectableDates] = useState([]); // Define the selectable dates array
-const [firstCheckbox, setFirstCheckbox] = useState('');
-const [secondCheckbox, setSecondCheckbox] = useState('');
-const fetchAvailableDates = async () => {
-try {
-// Fetch available dates and days from API
-const vehicleId = sessionStorage.getItem('Vehicle_Id');
-//const vehicleId = 197;
-const response = await api.get(`/seller/getagentscalender/${vehicleId}`);
-if (Array.isArray(response.data.Agents_Date)) {
-// Set the selectable dates array
-setSelectableDates(response.data.Agents_Date);
-} else {
-console.error('Invalid data format for dates:', response.data.Agents_Date);
-}
-if (Array.isArray(response.data.Agent_Day)) {
-// Set the selectable days array
-setSelectableDays(response.data.Agent_Day);
-} else {
-console.error('Invalid data format for days:', response.data.Agent_Day);
-}
-} catch (error) {
-console.error('Error fetching agent calendar:', error);
-}
-};
-useEffect(() => {
-const mode = sessionStorage.getItem('mode');
-const vehicleId = sessionStorage.getItem('Vehicle_Id');
-fetchAgentList();
-fetchAvailableDates();
-}, []);
-const isDateSelectable = ({ date }) => {
-const dayOfWeek = date.toLocaleString('en-us', { weekday: 'short' }); // Get the day of the week (e.g., 'Mon', 'Tue', etc.)
-const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding leading zero if needed
-const day = String(date.getDate()).padStart(2, '0'); // Adding leading zero if needed
-const dateString = `${date.getFullYear()}-${month}-${day}`;
-// Check if the date is after today
-const today = new Date();
-const isAfterToday = date > today;
-// Check if the date is selectable based on specific date or if it falls on a day in selectableDays array
-const isDateInSelectableDates = selectableDates.includes(dateString);
-const isDayInSelectableDays = selectableDays.includes(dayOfWeek);
-// If the date is after today and either it's in selectableDates or the day is in selectableDays and the date is not in selectableDates, it is selectable
-return isAfterToday && (isDateInSelectableDates || (!isDateInSelectableDates && isDayInSelectableDays));
-};
-const handleDateSelection = async (date, e) => {
-const year = date.getFullYear();
-const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding leading zero if needed
-const day = String(date.getDate()).padStart(2, '0'); // Adding leading zero if needed
-const selectedDateString = `${year}-${month}-${day}`;
-setDate(selectedDateString); // Update state with selected date
-setSelectedDate(selectedDateString);
-try {
-const response = await api.get(`/seller/generate-slots/${selectedDateString}`);
-// Assuming `slots` is set in the state
-setSlots(response.data.slots);
-// Optionally, if you want to set the first time slot as the selected time by default
-if (response.data.slots.length > 0) {
-setSelectedTime(`${response.data.slots[0].time}-${response.data.slots[0].Agent_id}`);
-}
-// Process the response data as needed
-} catch (error) {
-console.error('Error fetching slots:', error);
-}
-// Handle date selection here
-};
-const handleSubmit = async (event) => 
-{event.preventDefault();
-try {
-const sessionId = sessionStorage.getItem('Vehicle_Id');
-const selectedDate = new Date(date);
-const timeComponents = selectedTime.split(' '); // Split the time string into hours and minutes
-let [hours, minutes] = timeComponents[0].split(':');
-hours = parseInt(hours);
-if (timeComponents[1] === 'PM' && hours !== 12) {
-hours += 12; // Add 12 hours if it's PM and not already 12 PM
-} else if (timeComponents[1] === 'AM' && hours === 12) {
-hours = 0; // Convert 12 AM to 0 hours
-}
-selectedDate.setHours(hours, minutes);
-// Format the selected date and time
-const formattedDateTime =
-`${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()} ` +
-`${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}:${String(selectedDate.getSeconds()).padStart(2, '0')}`;
-const response = await api.post('/seller/bookinspection', {
-Vehicle_Id: sessionId,
-Agent_Id: selectedAgentId,
-Appt_DateTime: formattedDateTime ,
-Transmission_Type: transmissionType,
-Address: address,
-});
-setSuccessMessage("Your Appointment is Booked Successfully");
-setTimeout(() => {
-navigate('/experience-seamless');
-}, 3000);
-} catch (error) {
-console.error('Error Post :', error);
-}
-};
-const fetchAgentList = async () => {
-try {
-const response = await api.get('/agent/agentlist');
-const data = response.data.Agent.map(agent => ({
-id: agent.Agent_Id,
-name: agent.Agent_Fname
-}));
-setAgents(data);
-} catch (error) {
-console.error('Error fetching agent list:', error);
-}
-};
-const handleFirstCheckboxChange = (event) => {
-setFirstCheckbox(event.target.value);
-setSecondCheckbox(event.target.value);
-setTransmissionType(event.target.value);
-};
-const handleSecondCheckboxChange = (event) => {
-setSecondCheckbox(event.target.value);
-setFirstCheckbox(event.target.value);
-};
-const handleFirstSectionSubmit = (event) => {
-event.preventDefault();
-// Logic to handle form submission for the first section
-// You can update the state with the values entered by the user
-};
-const handleConfirmClick = () => {
-// Remove session value
-sessionStorage.removeItem('mode');
-};
-const formattedDates = availableDates.map(date => {
-const parts = date.split('-'); // Split the date string
-// Rearrange the parts to the format 'YYYY-MM-DD'
-return `${parts[2]}-${parts[1]}-${parts[0]}`;
-});
+   const navigate = useNavigate();
+   const [date, setDate] = useState('');
+   const [time, setTime] = useState('');
+   const [address, setAddress] = useState('');
+   const [agents, setAgents] = useState([]);
+   const [transmissionType, setTransmissionType] = useState('');
+   const [selectedAgentId, setSelectedAgentId] = useState('');
+   const [availableDates, setAvailableDates] = useState([]);
+   const [selectedTime, setSelectedTime] = useState('');
+   const [slots, setSlots] = useState([]);
+   const [successMessage, setSuccessMessage] = useState("");
+   const [availableDatesFromApi, setAvailableDatesFromApi] = useState([]);
+   const [selectedDate, setSelectedDate] = useState(new Date());
+   const [selectableDays, setSelectableDays] = useState([]); // Define the selectable days array
+   const [selectableDates, setSelectableDates] = useState([]); // Define the selectable dates array
+   const [firstCheckbox, setFirstCheckbox] = useState('');
+   const [secondCheckbox, setSecondCheckbox] = useState('');
+
+   const fetchAvailableDates = async () => {
+      try {
+            const vehicleId = sessionStorage.getItem('Vehicle_Id');
+            const response = await api.get(`/seller/getagentscalender/${vehicleId}`);
+            if (Array.isArray(response.data.Agents_Date)) {
+            setSelectableDates(response.data.Agents_Date);
+            } else {
+            console.error('Invalid data format for dates:', response.data.Agents_Date);
+            }
+            if (Array.isArray(response.data.Agent_Day)) {
+            setSelectableDays(response.data.Agent_Day);
+            } else {
+                console.error('Invalid data format for days:', response.data.Agent_Day);
+            }
+         } 
+      catch (error) {
+           console.error('Error fetching agent calendar:', error);
+      }
+   };
+
+   useEffect(() => {
+      const mode = sessionStorage.getItem('mode');
+      const vehicleId = sessionStorage.getItem('Vehicle_Id');
+      fetchAgentList();
+      fetchAvailableDates();
+   }, []);
+
+   const isDateSelectable = ({ date }) => {
+      const dayOfWeek = date.toLocaleString('en-us', { weekday: 'short' }); // Get the day of the week (e.g., 'Mon', 'Tue', etc.)
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding leading zero if needed
+      const day = String(date.getDate()).padStart(2, '0'); // Adding leading zero if needed
+      const dateString = `${date.getFullYear()}-${month}-${day}`;
+      // Check if the date is after today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set the time to midnight to ensure a proper date comparison
+      const isToday = date.toDateString() === today.toDateString(); // Check if the date is today
+      const isAfterToday = date > today; // Check if the date is after today
+      // Check if the date is selectable based on specific date or if it falls on a day in selectableDays array
+      const isDateInSelectableDates = selectableDates.includes(dateString);
+      const isDayInSelectableDays = selectableDays.includes(dayOfWeek);
+      // If the date is after today and either it's in selectableDates or the day is in selectableDays and the date is not in selectableDates, it is selectable
+      return (isToday || isAfterToday) && (isDateInSelectableDates || (!isDateInSelectableDates && isDayInSelectableDays));
+   };
+
+   const handleDateSelection = async (date, e) => {
+         const year = date.getFullYear();
+         const month = String(date.getMonth() + 1).padStart(2, '0'); // Adding leading zero if needed
+         const day = String(date.getDate()).padStart(2, '0'); // Adding leading zero if needed
+         const selectedDateString = `${year}-${month}-${day}`;
+         setDate(selectedDateString); // Update state with selected date
+         setSelectedDate(selectedDateString);
+         try {
+            const response = await api.get(`/seller/generate-slots/${selectedDateString}`);
+            // Assuming `slots` is set in the state
+            setSlots(response.data.slots);
+            // Optionally, if you want to set the first time slot as the selected time by default
+            if (response.data.slots.length > 0) {
+            setSelectedTime(`${response.data.slots[0].time}-${response.data.slots[0].Agent_id}`);
+            }
+            // Process the response data as needed
+         } catch (error) {
+         console.error('Error fetching slots:', error);
+         }
+       // Handle date selection here
+   };
+
+   const handleSubmit = async (event) =>{
+      event.preventDefault();
+      try {
+         const sessionId = sessionStorage.getItem('Vehicle_Id');
+         const selectedDate = new Date(date);
+         const timeComponents = selectedTime.split(' '); // Split the time string into hours and minutes
+         let [hours, minutes] = timeComponents[0].split(':');
+         hours = parseInt(hours);
+         if (timeComponents[1] === 'PM' && hours !== 12) {
+         hours += 12; // Add 12 hours if it's PM and not already 12 PM
+         } else if (timeComponents[1] === 'AM' && hours === 12) {
+         hours = 0; // Convert 12 AM to 0 hours
+         }
+         selectedDate.setHours(hours, minutes);
+         // Format the selected date and time
+         const formattedDateTime =
+         `${selectedDate.getFullYear()}-${selectedDate.getMonth() + 1}-${selectedDate.getDate()} ` +
+         `${String(selectedDate.getHours()).padStart(2, '0')}:${String(selectedDate.getMinutes()).padStart(2, '0')}:${String(selectedDate.getSeconds()).padStart(2, '0')}`;
+         const response = await api.post('/seller/bookinspection', {
+         Vehicle_Id: sessionId,
+         Agent_Id: selectedAgentId,
+         Appt_DateTime: formattedDateTime ,
+         Transmission_Type: transmissionType,
+         Address: address,
+      });
+         setSuccessMessage("Your Appointment is Booked Successfully");
+         setTimeout(() => {
+            navigate('/experience-seamless');
+         }, 3000);
+      } catch (error) {
+         console.error('Error Post :', error);
+      }
+   };
+
+   const fetchAgentList = async () => {
+      try {
+         const response = await api.get('/agent/agentlist');
+         const data = response.data.Agent.map(agent => ({
+         id: agent.Agent_Id,
+         name: agent.Agent_Fname
+      }));
+         setAgents(data);
+      } catch (error) {
+         console.error('Error fetching agent list:', error);
+      }
+   };
+
+   const handleFirstCheckboxChange = (event) => {
+      setFirstCheckbox(event.target.value);
+      setSecondCheckbox(event.target.value);
+      setTransmissionType(event.target.value);
+   };
+
+   const handleSecondCheckboxChange = (event) => {
+      setSecondCheckbox(event.target.value);
+      setFirstCheckbox(event.target.value);
+   };
+
+   const handleFirstSectionSubmit = (event) => {
+   event.preventDefault();
+   };
+
+   const handleConfirmClick = () => {
+      // Remove session value
+      sessionStorage.removeItem('mode');
+   };
+
+   const formattedDates = availableDates.map(date => {
+      const parts = date.split('-'); // Split the date string
+      // Rearrange the parts to the format 'YYYY-MM-DD'
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+   });
+   
 return (
 <section class="car-details">
    <SellerNav />
@@ -217,7 +226,7 @@ return (
                         <div class="form-check">
                            <input class="form-check-input" type="radio"  name="firstboxcheck" id="exampleRadios2" value="Manual"
                            checked={firstCheckbox === 'Manual'}
-                           onChange={handleFirstCheckboxChange} 
+                           onChange={handleFirstCheckboxChange}
                            />
                            <label class="form-check-label" for="exampleRadios1"></label>
                            <span>Manual</span>                
@@ -253,7 +262,7 @@ return (
                      <div class="row">
                         <div class="col-lg-2 col-6">
                            <div class="form-check">
-                              <input class="form-check-input" type="radio" name="secondboxcheck"  id="exampleRadios3" 
+                              <input class="form-check-input" type="radio" name="secondboxcheck"  id="exampleRadios3"
                               value="Automatic"
                               checked={secondCheckbox === 'Automatic'}
                               onChange={handleSecondCheckboxChange}
@@ -284,7 +293,7 @@ return (
                </div>
             </div>
             <div class="bookappointment-btn mt-4">
-               {successMessage && 
+               {successMessage &&
                <p class="text-success">{successMessage}</p>
                }
                <button className="btn btn-primary form-button py-3 px-5" onClick={handleSubmit}>Confirm</button>

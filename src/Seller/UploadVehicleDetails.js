@@ -3,25 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { SellerNav } from './SellerNav';
 import api from '../api';
 export const UploadVehicleDetails = () => {
-   
       const navigate = useNavigate();
       const [dashboardImageUrls, setDashboardImageUrls] = useState([]);
-	  const [imageChangedDashboard, setImageChangedDashboard] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
-	  const [dashboardImages, setDashboardImages] = useState([]);
-	   
+      const [imageChangedDashboard, setImageChangedDashboard] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
+      const [dashboardImages, setDashboardImages] = useState([]);
       const [exteriorImageUrls, setExteriorImageUrls] = useState([]);
-	  const [imageChangedExterior, setImageChangedExterior] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
-	  const [exteriorImages, setExteriorImages] = useState([]);
-	   
+      const [imageChangedExterior, setImageChangedExterior] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
+      const [exteriorImages, setExteriorImages] = useState([]);
       const [interiorImageUrls, setInteriorImageUrls] = useState([]);
-	  const [imageChanged, setImageChanged] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
-	  const [interiorImages, setInteriorImages] = useState([]);
-	  
-	  
+      const [imageChanged, setImageChanged] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
+      const [interiorImages, setInteriorImages] = useState([]);
       const [rimsImageUrls, setRimsImageUrls] = useState([]);
-	  const [imageChangedRims, setImageChangedRims] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
-	   const [rimsImages, setRimsImages] = useState([]);
-	   
+      const [imageChangedRims, setImageChangedRims] = useState(Array(4).fill(false)); // Assuming 4 images, adjust the size accordingly
+      const [rimsImages, setRimsImages] = useState([]);
       const [imagesData, setImagesData] = useState({});
       const [isAfterMarketSelected, setIsAfterMarketSelected] = useState(false);
       const [currentStep, setCurrentStep] = useState(1);
@@ -90,43 +84,39 @@ export const UploadVehicleDetails = () => {
       const [interioimage, setInterioimage] = useState('');
       const [vehiclevideo, setVehicleVideo] = useState('');
       
-   
-	// Modify handleImageChange to update the imageChanged state
-const handleImageChange = (event, index) => {
-    const file = event.target.files[0];
-    
-    // Check if the user selected a new image
-    if (file) {
-        // User selected a new image, update the interiorImageUrls and set imageChanged to true
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const imageDataUrl = reader.result;
-            setInteriorImageUrls(prevImageUrls => {
-                const updatedImageUrls = [...prevImageUrls];
-                updatedImageUrls[index] = imageDataUrl;
-                return updatedImageUrls;
-            });
-            setImageChanged(prevImageChanged => {
-                const updatedImageChanged = [...prevImageChanged];
-                updatedImageChanged[index] = true;
-                return updatedImageChanged;
-            });
-        };
-        reader.readAsDataURL(file);
-    } else {
+      // Modify handleImageChange to update the imageChanged state
+   const handleImageChange = (event, index) => {
+     const file = event.target.files[0];
+      // Check if the user selected a new image
+      if (file) {
+         // User selected a new image, update the interiorImageUrls and set imageChanged to true
+         const reader = new FileReader();
+         reader.onloadend = () => {
+               const imageDataUrl = reader.result;
+               setInteriorImageUrls(prevImageUrls => {
+                  const updatedImageUrls = [...prevImageUrls];
+                  updatedImageUrls[index] = imageDataUrl;
+                  return updatedImageUrls;
+               });
+               setImageChanged(prevImageChanged => {
+                  const updatedImageChanged = [...prevImageChanged];
+                  updatedImageChanged[index] = true;
+                  return updatedImageChanged;
+               });
+         };
+         reader.readAsDataURL(file);
+      } else {
         // User didn't select a new image, set imageChanged to false
         setImageChanged(prevImageChanged => {
             const updatedImageChanged = [...prevImageChanged];
             updatedImageChanged[index] = false;
             return updatedImageChanged;
         });
-    }
-};
+       }
+   };
 // Dashboard
-
 const handleImageChangedashboard = (event, index) => {
     const file = event.target.files[0];
-    
     // Check if the user selected a new image
     if (file) {
         // User selected a new image, update the interiorImageUrls and set imageChanged to true
@@ -336,7 +326,7 @@ useEffect(() => {
       };
       const handlekeys = (event) => {
          setselectedKeys(event.target.value);
-         console.log(event.target.value)
+
       };
       const handleSetoftireChange = (event) => {
          const isChecked = event.target.checked; // Check if the checkbox is checked
@@ -588,7 +578,7 @@ const handledrivablenote = (event) => {
 };
 const handlevehiclevideo = (event) => {
    const value = event.target.value; // Get the value from the textarea
-   console.log(event.target.value)
+
    setVehicleVideo(value); // Update state with the value from the textarea
 
 };
@@ -599,14 +589,12 @@ const fetchData = async () => {
    try {
        const storedVehicleId = sessionStorage.getItem('Vehicle_Id');
        if (!storedVehicleId) {
-           console.error('Vehicle Id is null');
+      
            return;
        }
        const response = await api.get(`/seller/vehicle/${storedVehicleId}`);
        const vehicleData = response.data;
        // Log the entire API response
-       console.log('API response:', vehicleData);
-     
        setLocation(vehicleData.vehicle.Location || '');
        setVin(vehicleData.vehicle.VIN || '');
        setYear(vehicleData.vehicle.Year || '');
@@ -663,10 +651,6 @@ const fetchData = async () => {
        setRimsChange(vehicleData.vehicle.Stock_Rims || '');
        setInterioimage(vehicleData.vehicle.Interior_Image || '');
        setVehicleVideo(vehicleData.vehicle.Vehicle_video || '');
-       
-
-       
-       
    } catch (error) {
        console.error('Error fetching vehicle details:', error);
    }
@@ -729,22 +713,16 @@ const getFileNameFromUrl = (url) => {
 
 const handleSubmit = async (event) => {
    event.preventDefault();
-    console.log(event.target.files); // Log files property to see if it's present
-    console.log(event.target); 
-    console.log('Form submitted with image Interior:', interiorImageUrls);
-   console.log('Form submitted with image Dashboard:', dashboardImageUrls);
-   console.log('Form submitted with image Exterior:', exteriorImageUrls);
-   console.log('Form submitted with image Rims:', rimsImageUrls); 
  
    try {
        const formData = new FormData(); // Create a new FormData object
-       formData.append('Location', location);
-       formData.append('VIN', vin);
-       formData.append('Year', year);
-       formData.append('Model', model);
-       formData.append('Trim', trim);
-       formData.append('Mileage', mileage);
-       formData.append('Make', make);
+         formData.append('Location', location);
+         formData.append('VIN', vin);
+         formData.append('Year', year);
+         formData.append('Model', model);
+         formData.append('Trim', trim);
+         formData.append('Mileage', mileage);
+         formData.append('Make', make);
          formData.append('Seller_Id', storedUserId);
          formData.append('Color', selectedColor);
          formData.append('Car_Keys', selectedKeys);
@@ -853,9 +831,6 @@ const handleSubmit = async (event) => {
 		  formData.append(`Rims_Image${index + 1}`, file);
 		}
 	  });
-       
-       // Log formData to console
-       console.log('FormData:', formData);
        // Make the API request with formData
        setIsLoading(true); // Show loader
        setIsPopupVisible(false);  // Hide Popup
@@ -865,7 +840,6 @@ const handleSubmit = async (event) => {
                     'Content-Type': 'multipart/form-data', // Set content type to multipart/form-data
                 },
             });
-            console.log('Vehicle details uploaded successfully:', response.data);
             setSuccessMessage('Vehicle Edit Successfuly');
         } catch (error) {
             console.error('Error uploading vehicle details:', error);
@@ -941,14 +915,13 @@ const nextStep = () => {
         fetchDataImages();
     }, [currentStep]);
 
-    const baseImageUrl = `https://topdevit.com/clients/carchaser/public/uploads/${storedVehicleId}/`;
+    const baseImageUrl = `https://backend.carchaser.ca/uploads/${storedVehicleId}/`;
    
 
     const fetchDataImages = async () => {
       try {
         const response = await api.get(`/seller/getvehicleimages/${storedVehicleId}`);
-        console.log('Response:', response.data);
-    
+      
         // Extract image names from the response
         const dashboardImages = response.data.Vehicle_Image[0].dashboard;
         const exteriorImages = response.data.Vehicle_Image[0].exterior;
@@ -995,11 +968,6 @@ const nextStep = () => {
         setDashboardImageUrls(mixBaseDashboardImages);
         setExteriorImageUrls(mixBaseExteriorImages);
         setRimsImageUrls(mixBaseRimsImages);
-        // Log the resulting image URLs
-        console.log('Dashboard Image URLs:', mixBaseDashboardImages);
-        console.log('Exterior Image URLs:', mixBaseExteriorImages);
-        console.log('Interior Image URLs:', mixBaseInteriorImages);
-        console.log('Rims Image URLs:', mixBaseRimsImages);
       } catch (error) {
         console.error('Error fetching vehicle images:', error);
         // Handle error
@@ -1021,7 +989,6 @@ const nextStep = () => {
     const handleOptionChangerimss = (event) => {
       const value = event.target.value; // Get the selected value
       setIsAfterMarketSelected(value === 'AfterMarket'); // Update state based on the selected value
-      console.log(value); // Log the selected value
       if (value === 'StockRims') {
          setRimsChange('');
    }
@@ -1035,7 +1002,6 @@ const handleIssuesChange = (event) => {
    if (value === 'No') {
       setIssueNote('');
 }
-   console.log(value === 'Yes' ? 1 : 0); // Log 1 if 'Yes' selected, 0 if 'No' selected
    setHasIssues(event.target.id === 'showButton2');
 };
       const handleModificationsChange = (event) => {
@@ -1044,13 +1010,13 @@ const handleIssuesChange = (event) => {
           if (value === 'No') {
             setModificationsNote('');
       }
-         console.log(value === 'Yes' ? 1 : 0); // Log 1 if 'Yes' selected, 0 if 'No' selected
+        
         setIsModificationsSelected(event.target.id === 'showButton3');
     };
     const handlefinanced = (event) => {
       const value = event.target.value; // Get the selected value
       setIsFinancedSelected(value === 'Yes'); // Update state based on the selected value
-      console.log(value === 'Yes' ? 1 : 0); // Log 1 if 'Yes' selected, 0 if 'No' selected
+    
       if (value === 'No') {
          setFinancedNote('');
       }
@@ -1066,7 +1032,7 @@ const handleIssuesChange = (event) => {
           const allowedTypes = ['image/jpeg', 'image/png'];
           if (!allowedTypes.includes(file.type)) {
               // Handle unsupported file type error
-              console.error('Unsupported file type. Please select a JPEG or PNG image.');
+         
               return;
           }
   
@@ -1074,7 +1040,7 @@ const handleIssuesChange = (event) => {
           const maxSize = 5 * 1024 * 1024; // 5 MB
           if (file.size > maxSize) {
               // Handle file size limit exceeded error
-              console.error('File size limit exceeded. Please select a smaller image.');
+             
               return;
           }
   
@@ -1116,47 +1082,19 @@ const handleIssuesChange = (event) => {
                            <input type="text" value={mileage}  hidden/>
                            <label htmlFor="exampleFormControlSelect1">Color</label>
                            <select className="form-control" id="exampleFormControlSelect1" value={selectedColor} onChange={handleColorChange}>
-                           <option value="Gotham Gray">Gotham Gray</option>
-                              <option value="Goodwood Green">Goodwood Green</option>
-                              <option value="Wasabi Green">Wasabi Green</option>
-                              <option value="Sunbeam Orange">Sunbeam Orange</option>
-                              <option value="Daybright Blue">Daybright Blue</option>
-                              <option value="Fine Brodgar Silver">Fine Brodgar Silver</option>
-                              <option value="Urban Green">Urban Green</option>
-                              <option value="Anglesey Green">Anglesey Green</option>
-                              <option value="Petrol Mica">Petrol Mica</option>
-                              <option value="Sepia Metallic">Sepia Metallic</option>
-                              <option value="Cyber Yellow">Cyber Yellow</option>
-                              <option value="Panther Black Matte">Panther Black Matte</option>
-                              <option value="Gold Mercury">Gold Mercury</option>
-                              <option value="Polymimetic Gray">Polymimetic Gray</option>
-                              <option value="Black Opal Metallic">Black Opal Metallic</option>
-                              <option value="Punk’n Orange">Punk’n Orange</option>
-                              <option value="Night Interaction Blue">Night Interaction Blue</option>
-                              <option value="Verde Royale">Verde Royale</option>
-                              <option value="Notte Black">Notte Black</option>
-                              <option value="Cerulean Blue">Cerulean Blue</option>
-                              <option value="XP Green">XP Green</option>
-                              <option value="Sarigan Quartz">Sarigan Quartz</option>
-                              <option value="Cyber Yellow">Cyber Yellow</option>
-                              <option value="Orange Flame Metallic">Orange Flame Metallic</option>
-                              <option value="Leblon Violet Metallic">Leblon Violet Metallic</option>
-                              <option value="Essmann Green">Essmann Green</option>
-                              <option value="Baja Yellow">Baja Yellow</option>
-                              <option value="Stardust Blue">Stardust Blue</option>
-                              <option value="Pearl Rose">Pearl Rose</option>
-                              <option value="La Rose Noire">La Rose Noire</option>
-                              <option value="Ultra Red">Ultra Red</option>
-                              <option value="Blue Flame">Blue Flame</option>
-                              <option value="Plasma Orange">Plasma Orange</option>
-                              <option value="Terra">Terra</option>
-                              <option value="Silver/Grey">Silver/Grey</option>
-                              <option value="Black Gloss">Black Gloss</option>
-                              <option value="Blue Gloss">Blue Gloss</option>
-                              <option value="Red Gloss">Red Gloss</option>
-                              <option value="Pearl White">Pearl White</option>
-                              <option value="Gold Gloss">Gold Gloss</option>
-                              <option value="Green Gloss">Green Gloss</option>
+                           <option value="Red">Red</option>
+                              <option value="Orange">Orange</option>
+                              <option value="Yellow">Yellow</option>
+                              <option value="Green">Green</option>
+                              <option value="Blue">Blue</option>
+                              <option value="Pink">Pink</option>
+                              <option value="Purple">Purple</option>
+                              <option value="Indigo">Indigo</option>
+                              <option value="Violet">Violet</option>
+                              <option value="Brown">Brown</option>
+                              <option value="Gray">Gray</option>
+                              <option value="Black">Black</option>
+                              <option value="White">White</option>
                            </select>
                         </div>
                        <div class="form-group">
@@ -2177,7 +2115,7 @@ const handleIssuesChange = (event) => {
    {isLoading && (
        <div className="loader">
            <img src="../images/load.png"/>
-           <p>Your form is Uploading...</p>
+           <p>Loading your Estimate</p>
        </div>
    )}
    {!isLoading && (

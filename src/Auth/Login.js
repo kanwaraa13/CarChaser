@@ -1,79 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api'; 
-export const Login = () => {
-const navigate = useNavigate();
-const [submitted, setSubmitted] = useState(false);
-const [firstName, setFirstName] = useState('');
-const [lastName, setLastName] = useState('');
-const [email, setEmail] = useState('');
-const [phonenumber, setPhoneNumber] = useState('');
-const [postalcode, setPostalCode] = useState('');
-const [city, setCity] = useState('');
-const [firstNameError, setFirstNameError] = useState('');
-const [lastNameError, setLastNameError] = useState('');
-const [lastemailError, setLastEmailError] = useState('');
-const [lastphonenumberError, setPhoneNumberError] = useState('');
-const [lastpostalcodeError, setPostalCodeError] = useState('');
-const [cityError, setCityError] = useState('');
-const [errors, setErrors] = useState();
-useEffect(() => {
-const params = new URLSearchParams(window.location.search);
-const vehicleId = params.get('Vehicle_Id');
-if (vehicleId) {
-// Store Vehicle_Id in sessionStorage
-sessionStorage.setItem('Vehicle_Id', vehicleId);
-}
-}, []); // Run only once on component mount
-const handleSignUp = async (event) => {
-event.preventDefault();
-// Reset all error messages
-setFirstNameError('');
-setLastNameError('');
-setLastEmailError('');
-setPhoneNumberError('');
-setPostalCodeError('');
-setCityError('');
-// Check if any input field is empty
-if (
-firstName.trim() === '' ||
-lastName.trim() === '' ||
-email.trim() === '' ||
-phonenumber.trim() === '' ||
-postalcode.trim() === '' ||
-city.trim() === ''
-) {
-// Set error messages for empty fields
-setFirstNameError(firstName.trim() === '' ? 'First name cannot be empty' : '');
-setLastNameError(lastName.trim() === '' ? 'Last name cannot be empty' : '');
-setLastEmailError(email.trim() === '' ? 'Email cannot be empty' : '');
-setPhoneNumberError(phonenumber.trim() === '' ? 'Phone Number cannot be empty' : '');
-setPostalCodeError(postalcode.trim() === '' ? 'Postal Code cannot be empty' : '');
-setCityError(city.trim() === '' ? 'City cannot be empty' : '');
-// Exit the function early if any field is empty
-return;
-}
-// If all input fields are filled, proceed with the API call
-try {
-const response = await api.post('/auth/seller/register', {
-first_name: firstName,
-last_name: lastName,
-email: email,
-phone: phonenumber,
-postal_code: postalcode,
-city,
-});
-setSubmitted(true);
-sessionStorage.setItem('isNewUser', 'true');
-setTimeout(() => {
-navigate('/sellerin');
-}, 3000);
-} catch (error) {
-console.error('Error occurred during registration:', error);
-const errorMessage = error.response.data; // Log the error response
-setErrors(errorMessage);
-}
-};
+   export const Login = () => {
+   const navigate = useNavigate();
+   const [submitted, setSubmitted] = useState(false);
+   const [firstName, setFirstName] = useState('');
+   const [lastName, setLastName] = useState('');
+   const [email, setEmail] = useState('');
+   const [phonenumber, setPhoneNumber] = useState('');
+   const [postalcode, setPostalCode] = useState('');
+   const [city, setCity] = useState('');
+   const [firstNameError, setFirstNameError] = useState('');
+   const [lastNameError, setLastNameError] = useState('');
+   const [lastemailError, setLastEmailError] = useState('');
+   const [lastphonenumberError, setPhoneNumberError] = useState('');
+   const [lastpostalcodeError, setPostalCodeError] = useState('');
+   const [cityError, setCityError] = useState('');
+   const [errors, setErrors] = useState();
+
+   useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      const vehicleId = params.get('Vehicle_Id');
+      if (vehicleId) {
+      sessionStorage.setItem('Vehicle_Id', vehicleId);
+      }
+   }, []); // Run only once on component mount
+   
+   const handleSignUp = async (event) => {
+      event.preventDefault();
+      setFirstNameError('');
+      setLastNameError('');
+      setLastEmailError('');
+      setPhoneNumberError('');
+      setPostalCodeError('');
+      setCityError('');
+         // Check if any input field is empty
+      if (
+         firstName.trim() === '' ||
+         lastName.trim() === '' ||
+         email.trim() === '' ||
+         phonenumber.trim() === '' ||
+         postalcode.trim() === '' ||
+         city.trim() === ''
+      ) {
+         // Set error messages for empty fields
+         setFirstNameError(firstName.trim() === '' ? 'First name cannot be empty' : '');
+         setLastNameError(lastName.trim() === '' ? 'Last name cannot be empty' : '');
+         setLastEmailError(email.trim() === '' ? 'Email cannot be empty' : '');
+         setPhoneNumberError(phonenumber.trim() === '' ? 'Phone Number cannot be empty' : '');
+         setPostalCodeError(postalcode.trim() === '' ? 'Postal Code cannot be empty' : '');
+         setCityError(city.trim() === '' ? 'City cannot be empty' : '');
+         // Exit the function early if any field is empty
+         return;
+         }
+         // If all input fields are filled, proceed with the API call
+      try {
+         const response = await api.post('/auth/seller/register', {
+         first_name: firstName,
+         last_name: lastName,
+         email: email,
+         phone: phonenumber,
+         postal_code: postalcode,
+         city,
+         });
+            setSubmitted(true);
+            sessionStorage.setItem('isNewUser', 'true');
+            setTimeout(() => {
+            navigate('/sellerin');
+         }, 3000);
+      } catch (error) {
+         console.error('Error occurred during registration:', error);
+         const errorMessage = error.response.data; // Log the error response
+         setErrors(errorMessage);
+      }
+   };
 return (
 <section className="seller-section">
    <div className="container">
